@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>用原生js实现tab选项卡</title>
+    <style>
+        .container {
+            max-width: 800px;
+            margin: 30px auto;
+            padding: 16px;
+            border-radius: 4px;
+            box-shadow: 0 0 4px 0px rgba(0, 0, 0, .3);
+        }
+        
+        .tabs .tab-header {
+            display: flex;
+            color: #303030;
+            font-size: 13px;
+            font-weight: 500;
+            line-height: 30px;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .tabs .tab-item {
+            margin-right: 30px;
+            cursor: pointer;
+            margin-bottom: -2px;
+        }
+        
+        .tabs .tab-item.active {
+            color: #409eff;
+            border-bottom: 2px solid #409eff;
+        }
+        
+        .tabs .tab-content {
+            height: 100px;
+        }
+        
+        .tabs .tab-panel {
+            padding: 16px 0;
+            font-size: 14px;
+            display: none;
+        }
+        
+        .tabs .tab-panel.active {
+            display: block;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- 用原生js实现tab选项卡基本效果 -->
+    <div class="container">
+        <h2>Tab选项卡</h2>
+        <div class="tabs">
+            <div class="tab-header">
+                <span class="tab-item active">用户管理</span>
+                <span class="tab-item">配置管理</span>
+                <span class="tab-item">角色管理</span>
+                <span class="tab-item">定时任务补偿</span>
+            </div>
+            <div class="tab-content">
+                <div class="tab-panel active">用户管理</div>
+                <div class="tab-panel">配置管理</div>
+                <div class="tab-panel">角色管理</div>
+                <div class="tab-panel">定时任务补偿</div>
+            </div>
+        </div>
+    </div>
+    <script>
+        // 方便起见，先声明两个变量，为后续节省代码
+        const $ = s => document.querySelector(s)
+        const $$ = s => document.querySelectorAll(s)
+
+        const $$tabItems = $$('.tabs .tab-item')
+        const $$tabPanels = $$('.tabs .tab-panel')
+
+        $$tabItems.forEach(($tab) => {
+            // 遍历返回的是一个 dom对象，约定$tab代表遍历返回的对象，$$tab表示返回的是一个类数组对象
+            $tab.onclick = function() {
+                // 当点击其中一个item时，触发点击事件,被点击元素处于active状态
+                // $$tabItems遍历所有子元素，并移除每个子元素的'.active';
+                // 同时给当前点击的子元素加上active
+                $$tabItems.forEach($tab => $tab.classList.remove('active'))
+                this.classList.add('active')
+
+                // 显示对应的tab-panel子元素
+                // 首先获取被点击元素的索引，将该索引传递给$$tabPanels类数组
+                let index = [...$$tabItems].indexOf(this)
+                    // 遍历$$tabPanels,并将每一个子面板去除active;同时为符合当前索引的面板加上active状态
+                $$tabPanels.forEach($panel => $panel.classList.remove('active'))
+                $$tabPanels[index].classList.add('active')
+
+            }
+
+        })
+    </script>
+</body>
+
+</html>

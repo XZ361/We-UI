@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>用原生js实现Collapse折叠面板</title>
+    <style>
+        .container {
+            max-width: 800px;
+            margin: 30px auto;
+            padding: 16px;
+            border-radius: 4px;
+            box-shadow: 0 0 4px 0px rgba(0, 0, 0, .3);
+        }
+        
+        .collapse {
+            font-size: 13px;
+        }
+        
+        .collapse .item {
+            border-top: 1px solid #ddd;
+        }
+        
+        .collapse .item:last-child {
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .collapse .item-header {
+            display: flex;
+            /*让箭头实现右浮动*/
+            align-items: center;
+            color: #303030;
+            font-weight: 500;
+            line-height: 40px;
+        }
+        
+        .collapse .item-header::after {
+            content: '';
+            display: block;
+            width: 6px;
+            height: 6px;
+            border-top: 1px solid #303030;
+            border-right: 1px solid #303030;
+            transform: rotate(45deg);
+            justify-content: flex-end;
+            margin-left: auto;
+            /*让箭头靠右*/
+        }
+        
+        .collapse .item-content {
+            color: #666;
+            font-size: 14px;
+            /* padding-bottom: 16px; */
+            /* display: none;如果设置display为none的话，后续就无法通过js来实现下滑的动画效果，所以设置为height:0;overflow:hidden */
+            height: 0;
+            overflow: hidden;
+        }
+        
+        .collapse .item.active .item-content {
+            height: auto;
+            padding-bottom: 16px;
+            transition: all .3s;
+        }
+        
+        .collapse .item.active .item-header::after {
+            transform: rotate(135deg);
+        }
+    </style>
+</head>
+
+<body>
+    <!-- 原生js实现手风琴效果 -->
+    <div class="container">
+        <h2>手风琴效果1</h2>
+        <div class="collapse">
+            <div class="item">
+                <div class="item-header">Vue.js</div>
+                <div class="item-content">
+                    尤雨溪是Vue.js框架的作者，HTML5版Clear的打造人。他认为，未来App的趋势是轻量化和细化，<br> 能 解决问题的应用就是好应用。
+
+                </div>
+            </div>
+            <div class="item">
+                <div class="item-header">React.js</div>
+                <div class="item-content">
+                    React（有时叫React.js或ReactJS），<br>是一个为数据提供渲染为HTML视图的开源JavaScript 库。<br> React视图通常采用包含以自定义HTML标记规定的其他组件的组件渲染。
+                </div>
+            </div>
+            <div class="item">
+                <div class="item-header">Angular.js</div>
+                <div class="item-content">
+                    Angular (通常是指 "Angular 2+" 或 "Angular v2 及更高版本")[4][5],<br> 是一个基于 TypeScript 的 开源 Web 应用框架 由 Google 的 Angular 团队以及社区共同领导。
+                </div>
+            </div>
+            <div class="item">
+                <div class="item-header">Javascript</div>
+                <div class="item-content">
+                    JavaScript ( JS ) 是一种具有函数优先的轻量级<br>解释型或即时编译型的编程语言。<br>虽然它是作为开发Web 页面的脚本语言而出名的，
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <h2>手风琴效果2</h2>
+        <div class="collapse">
+            <div class="item">
+                <div class="item-header">Vue.js</div>
+                <div class="item-content">
+                    尤雨溪是Vue.js框架的作者，HTML5版Clear的打造人。他认为，未来App的趋势是轻量化和细化，<br> 能 解决问题的应用就是好应用。
+
+                </div>
+            </div>
+            <div class="item">
+                <div class="item-header">React.js</div>
+                <div class="item-content">
+                    React（有时叫React.js或ReactJS），<br>是一个为数据提供渲染为HTML视图的开源JavaScript 库。<br> React视图通常采用包含以自定义HTML标记规定的其他组件的组件渲染。
+                </div>
+            </div>
+            <div class="item">
+                <div class="item-header">Angular.js</div>
+                <div class="item-content">
+                    Angular (通常是指 "Angular 2+" 或 "Angular v2 及更高版本")[4][5],<br> 是一个基于 TypeScript 的 开源 Web 应用框架 由 Google 的 Angular 团队以及社区共同领导。
+                </div>
+            </div>
+            <div class="item">
+                <div class="item-header">Javascript</div>
+                <div class="item-content">
+                    JavaScript ( JS ) 是一种具有函数优先的轻量级<br>解释型或即时编译型的编程语言。<br>虽然它是作为开发Web 页面的脚本语言而出名的，
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        // // 方便起见，先声明两个变量，为后续节省代码
+        const $ = s => document.querySelector(s)
+        const $$ = s => document.querySelectorAll(s)
+
+        // 面向对象，封装手风琴组件
+        class Collapse {
+            constructor($container, type = 1) {
+                this.$container = $container
+                this.$$items = $container.querySelectorAll('.item')
+                this.type = type
+
+                this.bind()
+            }
+            bind() {
+                let _this = this
+                this.$$items.forEach($item => {
+                    $item.onclick = function() {
+                        if (_this.type === 2) {
+                            // 只对当前本身被点击的手风琴块切换状态
+                            this.classList.toggle('active')
+                        } else if (_this.type === 1) {
+                            // 当为i默认type时，去除其他item的active，并为当前被点击的部分加上.active
+                            _this.$$items.forEach($item => $item.classList.remove('active'))
+                            this.classList.add('active')
+                        }
+                    }
+                })
+            }
+        }
+
+        new Collapse(document.querySelectorAll('.collapse')[0])
+        new Collapse(document.querySelectorAll('.collapse')[1], 2)
+    </script>
+</body>
+
+</html>
