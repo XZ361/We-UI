@@ -4,3 +4,5 @@
 [Tab预览链接](https://wangxiaozhan.github.io/We-UI/weui/Tab/tab3.html)
 
 [Collapse预览链接](https://wangxiaozhan.github.io/We-UI/weui/Collapse/collapse.html)
+
+[Message预览链接](https://wangxiaozhan.github.io/We-UI/weui/Message/message.html)
