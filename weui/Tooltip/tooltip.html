@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>通过原生js实现Tooltip文字提示组件</title>
+    <link rel="stylesheet" href="//at.alicdn.com/t/font_1688125_kn6tkiu2yf.css">
+    <style>
+        .container {
+            max-width: 800px;
+            margin: 30px auto;
+            padding: 16px;
+            border-radius: 4px;
+            box-shadow: 0 0 4px 0px rgba(0, 0, 0, .3);
+        }
+        
+        .button {
+            padding: 10px 16px;
+            font-size: 14px;
+            font-weight: 500;
+            color: #303030;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            background: white;
+            outline: none;
+            cursor: pointer;
+            position: relative;
+        }
+        
+        .button:hover {
+            color: lightskyblue;
+            border-color: lightskyblue;
+        }
+        
+        .tooltip {
+            position: absolute;
+            z-index: 10;
+            background: #000;
+            color: #fff;
+            display: none;
+            white-space: nowrap;
+            padding: 3px 6px;
+            border-radius: 4px;
+        }
+        
+        .tooltip.top {
+            top: -100%;
+            left: 50%;
+            transform: translate(-50%);
+        }
+        
+        .tooltip.top::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translate(-50%, 0px);
+            width: 0;
+            height: 0;
+            border: 5px solid transparent;
+            /*颜色透明*/
+            border-top-color: #000;
+        }
+        
+        .tooltip.bottom {
+            bottom: -100%;
+            left: 50%;
+            transform: translate(-50%);
+        }
+        
+        .tooltip.bottom::after {
+            content: '';
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translate(-50%, 0px);
+            width: 0;
+            height: 0;
+            border: 5px solid transparent;
+            /*颜色透明*/
+            border-bottom-color: #000;
+        }
+        
+        .tooltip.left {
+            top: 50%;
+            right: 100%;
+            transform: translate(-10px, -50%);
+        }
+        
+        .tooltip.left::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 100%;
+            transform: translate(0px, -50%);
+            width: 0;
+            height: 0;
+            border: 5px solid transparent;
+            border-left-color: #000;
+        }
+        
+        .tooltip.right {
+            top: 50%;
+            left: 100%;
+            transform: translate(10px, -50%);
+        }
+        
+        .tooltip.right::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            right: 100%;
+            transform: translate(0px, -50%);
+            width: 0;
+            height: 0;
+            border: 5px solid transparent;
+            /*颜色透明*/
+            border-right-color: #000;
+        }
+        
+        .tooltip.show {
+            display: block;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h2>Tooltip文字提示组件</h2>
+        <div class="btn-group">
+            <button data-name='tooltip' data-align='top' data-text='我是上方内容' class="button">上</button>
+            <button data-name='tooltip' data-align='bottom' data-text='我是下方内容' class="button">下</button>
+            <button data-name='tooltip' data-align='left' data-text='我是左方内容' class="button">左</button>
+            <button data-name='tooltip' data-align='right' data-text='我是右方内容' class="button">右</button>
+        </div>
+    </div>
+    <script>
+        document.querySelectorAll('[data-name="tooltip"]').forEach($node => {
+            // 遍历当前dom节点，并为其添加鼠标事件
+            $node.onmouseenter = function() {
+                // 如果当前dom节点有tooltip属性，则展示tooltip;否则创建tooltip
+                if ($node.tooltip) {
+                    $node.showTooltip()
+                } else(
+                    // 传入参数为当前dom节点
+                    new Tooltip(this)
+                )
+            }
+
+            $node.onmouseleave = function() {
+                $node.hideTooltip()
+            }
+
+        })
+        class Tooltip {
+            // 构造函数
+            constructor($root) {
+                this.$root = $root
+                    // 为当前dom节点添加tooltip属性，并让其指向构造函数创建的实例对象（循环绑定）
+                this.$root.tooltip = this
+                    // 获取当前dom节点的align和text属性;dataset包含了自创建的data-属性
+                this.align = $root.dataset.align
+                this.text = $root.dataset.text
+                    // 执行渲染函数，创造对应的节点
+                this.render()
+                this.setRoot()
+                    // 执行show函数
+                this.show()
+            }
+            render() {
+                let $tooltip = document.createElement('div')
+                $tooltip.classList.add('tooltip')
+                $tooltip.classList.add(this.align)
+                $tooltip.innerText = this.text
+                    // 为当前的dom节点添加$tooltip属性                                                       
+                this.$tooltip = $tooltip
+                this.$root.appendChild($tooltip)
+            }
+            setRoot() {
+                this.$root.showTooltip = this.show.bind(this)
+                    // .bind(this),这样在执行函数时，调用函数内部的this就相当于调用外部的this,即组件
+                this.$root.hideTooltip = this.hide.bind(this)
+            }
+            show() {
+                this.$tooltip.classList.add('show')
+            }
+            hide() {
+                this.$tooltip.classList.remove('show')
+
+            }
+
+        }
+    </script>
+
+</body>
+
+</html>
