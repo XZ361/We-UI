@@ -7,4 +7,4 @@
 
 [Message预览链接](https://wangxiaozhan.github.io/We-UI/weui/Message/message.html)
 
-[Tooltip预览链接](https://wangxiaozhan.github.io/We-UI/weui/Tooltip/tooltip.html))
+[Tooltip预览链接](https://wangxiaozhan.github.io/We-UI/weui/Tooltip/tooltip.html)
