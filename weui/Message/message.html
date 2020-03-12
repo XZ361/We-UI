@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>通过原生js实现Message消息提示</title>
+    <link rel="stylesheet" href="//at.alicdn.com/t/font_1688125_kn6tkiu2yf.css">
+    <style>
+        .container {
+            max-width: 800px;
+            margin: 30px auto;
+            padding: 16px;
+            border-radius: 4px;
+            box-shadow: 0 0 4px 0px rgba(0, 0, 0, .3);
+        }
+        
+        .button {
+            padding: 10px 16px;
+            font-size: 14px;
+            font-weight: 500;
+            color: #303030;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            background: white;
+            outline: none;
+            cursor: pointer;
+        }
+        
+        .button:hover {
+            color: lightskyblue;
+            border-color: lightskyblue;
+        }
+        
+        .message {
+            position: fixed;
+            left: 50%;
+            top: 0px;
+            transform: translateX(-50%) translateY(-50px);
+            /*元素水平居中，并隐藏*/
+            display: flex;
+            align-items: center;
+            /*内容垂直居中*/
+            padding: 10px 16px;
+            background: #67c23A;
+            font-size: 14px;
+            color: #fff;
+            border-radius: 4px;
+            transition: all .6s;
+            /*设置动画效果*/
+            opacity: 0;
+        }
+        
+        .message .iconfont {
+            margin-right: 6px;
+        }
+        
+        .message.show {
+            transform: translateX(-50%) translateY(10px);
+            opacity: 1;
+        }
+        
+        .message.success {
+            background-color: #67c23a;
+        }
+        
+        .message.warning {
+            background-color: #e6a23c;
+        }
+        
+        .message.info {
+            background-color: #909399;
+        }
+        
+        .message.danger {
+            background-color: #f56c6c;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h2>Message消息提示</h2>
+        <div class="btn-group">
+            <button id="btn-success" class="button">成功</button>
+            <button id="btn-warning" class="button">警告</button>
+            <button id="btn-info" class="button">消息</button>
+            <button id="btn-danger" class="button">错误</button>
+        </div>
+    </div>
+    <script>
+        class Message {
+            constructor({
+                    type = 'success',
+                    text = ''
+                }) {
+                    // ES3写法,参数是options
+                    // this.type=this.options.type||'success'
+                    // this.text=this.options.text||''
+
+                    // ES6写法，参数是{type='success',text=''}，这时可以按下面方式写
+                    this.type = type
+                    this.text = text
+
+                    this.render()
+                    this.bind()
+                }
+                // 创建一个dom结构
+            render() {
+                let $div = document.createElement('div')
+                this.$message = $div
+                $div.classList.add('message')
+                $div.classList.add(this.type)
+                let $icon = document.createElement('span')
+                $icon.classList.add('iconfont')
+                $icon.classList.add('icon-' + this.type)
+                $div.appendChild($icon)
+                let $text = document.createTextNode(this.text)
+                $div.appendChild($text)
+                document.body.appendChild($div)
+            }
+            bind() {
+                // 绑定事件，先展示渲染好的dom元素，3秒之后消失
+                setTimeout(() => this.show());
+                // 3秒之后删除当前dom节点，防止大量相同的点击操作消耗js内存
+                setTimeout(() => this.destroy(), 3000)
+            }
+            show() {
+                this.$message.classList.add('show')
+            }
+            destroy() {
+                this.$message.classList.remove('show')
+                setTimeout(() => {
+                    this.$message.parentNode.removeChild(this.$message)
+                }, 400);
+            }
+        }
+        document.querySelector('#btn-success').onclick = function() {
+            new Message({
+                text: '我是成功'
+            })
+        }
+        document.querySelector('#btn-warning').onclick = function() {
+            new Message({
+                text: '我是警告',
+                type: 'warning'
+            })
+        }
+        document.querySelector('#btn-info').onclick = function() {
+            new Message({
+                text: '我是消息',
+                type: 'info'
+            })
+        }
+        document.querySelector('#btn-danger').onclick = function() {
+            new Message({
+                text: '我是危险',
+                type: 'danger'
+            })
+        }
+    </script>
+</body>
+
+</html>
