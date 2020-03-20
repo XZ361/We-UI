@@ -9,5 +9,5 @@
 
 [Tooltip预览链接](https://wangxiaozhan.github.io/We-UI/weui/Tooltip/tooltip.html)
 
-[Dialog预览链接](https://wangxiaozhan.github.io/We-UI/weui/Dialog/Dialog.html)
+[Dialog预览链接](https://wangxiaozhan.github.io/We-UI/weui/Dialog/dialog.html)
 
