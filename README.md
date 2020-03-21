@@ -11,5 +11,5 @@
 
 [Dialog预览链接](https://wangxiaozhan.github.io/We-UI/weui/Dialog/dialog.html)
 
-[Carousel预览链接](https://wangxiaozhan.github.io/We-UI/weui/Carousel/carousel.html)
+[Carousel预览链接](https://wangxiaozhan.github.io/We-UI/weui/Carousel/updateCarousel.html)
 
