@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=10">
+    <title>封装多个不同效果的Carousel轮播组件</title>
+    <style>
+        .container {
+            max-width: 800px;
+            margin: 30px auto;
+            padding: 16px;
+            border-radius: 4px;
+            box-shadow: 0 0 4px 0px rgba(0, 0, 0, .3);
+        }
+        
+        .carousel {
+            position: relative;
+            height: 200px;
+            overflow: hidden;
+        }
+        
+        .carousel .panels>a {
+            position: absolute;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            height: 100%;
+            text-decoration: none;
+            color: #333;
+        }
+        
+        .carousel .panels>a.active {
+            z-index: 10;
+        }
+        
+        .carousel .panels>a:nth-child(even) {
+            background-color: lightskyblue;
+        }
+        
+        .carousel .panels>a:nth-child(odd) {
+            background-color: lightgreen;
+        }
+        
+        .carousel .arrow {
+            position: absolute;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: none;
+            border-radius: 50%;
+            top: 50%;
+            background: rgba(31, 45, 61, .11);
+            opacity: 0;
+            transition: all .3s;
+            outline: none;
+            cursor: pointer;
+            z-index: 100;
+        }
+        
+        .carousel .arrow-pre {
+            left: 10px;
+            transform: translateX(-10px) translateY(-50%);
+        }
+        
+        .carousel:hover .arrow-pre {
+            opacity: 1;
+            transform: translateX(0) translateY(-50%);
+        }
+        
+        .carousel .arrow-next {
+            right: 10px;
+            transform: translateX(10px) translateY(-50%);
+        }
+        
+        .carousel:hover .arrow-next {
+            opacity: 1;
+            transform: translateX(0) translateY(-50%);
+        }
+        
+        .carousel .arrow::before {
+            content: '';
+            display: block;
+            width: 6px;
+            height: 6px;
+            border-left: 1px solid #fff;
+            border-top: 1px solid #fff;
+            transform: rotate(-45deg);
+        }
+        
+        .carousel .arrow.arrow-next::before {
+            transform: rotate(135deg);
+        }
+        
+        .carousel .indicators {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            bottom: 10px;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            z-index: 105;
+        }
+        
+        .carousel .indicators>li {
+            display: inline-block;
+            padding: 5px 0;
+            cursor: pointer;
+        }
+        
+        .carousel .indicators>li::before {
+            content: '';
+            display: block;
+            width: 30px;
+            height: 2px;
+            border-radius: 2px;
+            background: #c0c4cc;
+            transition: all .3s;
+        }
+        
+        .carousel .indicators>li.active::before {
+            background: #fff;
+        }
+        
+        #animation-select {
+            width: 100px;
+            padding: 10px 16px;
+            margin-bottom: 26px;
+            border-radius: 10px;
+            color: lightskyblue;
+            border: 1px solid lightskyblue;
+            outline: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h2>Carousel轮播</h2>
+        <select name="" id="animation-select">
+            <option value="slide">slide</option>
+            <option value="fade">fade</option>
+            <option value="zoom">zoom</option>
+        </select>
+        <div class="carousel">
+            <div class="panels">
+                <a class="active" href="#1">Javascript</a>
+                <a href="#2">Vue.js</a>
+                <a href="#3">React.js</a>
+                <a href="#4">Node.js</a>
+            </div>
+            <div class="arrows">
+                <button class="arrow arrow-pre"></button>
+                <button class="arrow arrow-next"></button>
+            </div>
+            <ul class="indicators">
+                <li class="active"></li>
+                <li></li>
+                <li></li>
+                <li></li>
+            </ul>
+        </div>
+        <!-- <h2>Carousel轮播</h2>
+        <div class="carousel">
+            <div class="panels">
+                <a class="active" href="#1">PHP</a>
+                <a href="#2">Go</a>
+                <a href="#3">Python</a>
+                <a href="#4">Java</a>
+            </div>
+            <div class="arrows">
+                <button class="arrow arrow-pre"></button>
+                <button class="arrow arrow-next"></button>
+            </div>
+            <ul class="indicators">
+                <li class="active"></li>
+                <li></li>
+                <li></li>
+                <li></li>
+            </ul>
+        </div> -->
+    </div>
+
+    <script>
+        // 当点击pre展示上一页面板 设置indicators
+        //点击next 展示下一页面板 设置indicators
+        //当点击indicator 展示第n页 设置indicators
+
+
+        //组件化实现Carousel轮播组件,让多个轮播组件互不影响
+
+        // 多个动画效果
+        const css = ($node, cssObj) => Object.assign($node.style, cssObj) //将css样式赋值到对应的Dom结构上
+        const Animation = {
+            slide($from, $to, direction) {
+                // 当fromindex<toindex时，dom结构向左移动；当fromindex>toindex,dom结构向右移动
+                // 判断direction
+                // 操作formdom结构和todom结构，通过css函数给dom结构赋值样式
+                //如果direction===left，那我们要将对应的dom结构摆放到对应的位置上
+                // 下一次在执行时，让fromDom和toDom归位
+                $from.style = ''
+                $to.style = ''
+                    // console.log('slide', arguments)
+                css($from, {
+                    transform: `translateX(0)`,
+                    zIndex: 10
+
+                })
+                css($to, {
+                    transform: `translateX(${direction==='right'?'-':''}100%)`,
+                    zIndex: 10
+
+                })
+
+                setTimeout(() => {
+                    css($from, {
+                        transform: `translateX(${direction==='left'?'-':''}100%)`,
+                        transition: `all .4s`
+                    })
+                    css($to, {
+                        transform: `translateX(0)`,
+                        transition: `all .4s`
+                    })
+                });
+
+
+            },
+            fade($from, $to) {
+                $from.style = ''
+                $to.style = ''
+
+                css($from, {
+                    opacity: 1,
+                    zIndex: 10
+
+                })
+                css($to, {
+                    opacity: 0,
+                    zIndex: 9
+
+                })
+
+                setTimeout(() => {
+                    css($from, {
+                        opacity: 0,
+                        zIndex: 10,
+                        transition: 'all .4s'
+                    })
+                    css($to, {
+                        opacity: 1,
+                        zIndex: 10,
+                        transition: 'all .4s'
+
+                    })
+                });
+
+                setTimeout(() => {
+                    css($from, {
+                        zIndex: 9
+                    }, 400)
+                    css($to, {
+                        zIndex: 10
+                    }, 400)
+                });
+            },
+            zoom($from, $to) {
+                $from.style = ''
+                $to.style = ''
+
+                css($from, {
+                    transform: 'scale(1)',
+                    opacity: 1,
+                    zIndex: 10
+
+                })
+                css($to, {
+                    transform: 'scale(10)',
+                    opacity: 0,
+                    zIndex: 9
+
+                })
+
+                setTimeout(() => {
+                    css($from, {
+                        transform: 'scale(10)',
+                        opacity: 0,
+                        zIndex: 10,
+                        transition: 'all .4s'
+                    })
+                    css($to, {
+                        transform: 'scale(1)',
+                        opacity: 1,
+                        zIndex: 10,
+                        transition: 'all .4s'
+
+                    })
+                });
+
+                setTimeout(() => {
+                    css($from, {
+                        zIndex: 9
+                    }, 400)
+                    css($to, {
+                        zIndex: 10
+                    }, 400)
+                });
+            }
+        }
+        class Carousel {
+            constructor($root, animation) {
+                this.$root = $root
+                this.$pre = $root.querySelector('.arrow-pre')
+                this.$next = $root.querySelector('.arrow-next')
+                this.$$indicators = $root.querySelectorAll('.indicators>li')
+                this.$$panels = $root.querySelectorAll('.panels>a')
+                this.animation = animation
+                this.bind()
+
+            }
+            bind() {
+                let self = this
+                    // 事件绑定
+                this.$pre.onclick = function() {
+                        let fromIndex = self.getIndex()
+                        let toIndex = self.getPreIndex()
+                        self.setPage(fromIndex, toIndex, 'right')
+                        self.setIndicator(toIndex)
+                    }
+                    // 或者换成es6箭头函数可以避免this指向性的问题 或调用bind
+                    // this.$pre.onclick = this.onPreClicked.bind(this)
+                this.$next.onclick = function() {
+                    let fromIndex = self.getIndex()
+                    let toIndex = self.getNextIndex()
+                    self.setPage(fromIndex, toIndex, 'left')
+                    self.setIndicator(toIndex)
+                }
+                this.$$indicators.forEach($indicator => $indicator.onclick = function(e) {
+                    // console.log(e.target)当前被点击的dom对象
+                    let fromIndex = self.getIndex()
+                    let toIndex = [...self.$$indicators].indexOf(e.target)
+                    let direction = fromIndex > toIndex ? 'right' : 'left'
+                    self.setPage(fromIndex, toIndex, direction)
+                    self.setIndicator(toIndex)
+                })
+            }
+            getIndex() {
+                return [...this.$$indicators].indexOf(this.$root.querySelector('.indicators .active'))
+            }
+            getPreIndex() {
+                return (this.getIndex() - 1 + this.$$indicators.length) % this.$$indicators.length
+
+            }
+            getNextIndex() {
+                return (this.getIndex() + 1) % this.$$indicators.length
+            }
+            setPage(fromIndex, toIndex, direction) {
+                // console.log('setPage', arguments)
+                // 执行传递进来的动画效果,根据传递的参数获取fromdom和todom
+                this.animation(this.$$panels[fromIndex], this.$$panels[toIndex], direction)
+            }
+            setIndicator(index) {
+                    this.$$indicators.forEach($panel => $panel.classList.remove('active'))
+                    this.$$indicators[index].classList.add('active')
+                }
+                // onPreClicked() {
+                //     let index = this.getPreIndex()
+                //     this.setPage(index)
+                //     this.setIndicator(index)
+                // }
+            setAnimation(animation) {
+                this.animation = animation
+            }
+        }
+
+        let $carousel = document.querySelector('.carousel')
+            // 设计模式：组合设计模式
+        let carousel = new Carousel($carousel, Animation.slide)
+        document.querySelector('#animation-select').onchange = function() {
+            carousel.setAnimation(Animation[this.value])
+        }
+    </script>
+</body>
+
+</html>
